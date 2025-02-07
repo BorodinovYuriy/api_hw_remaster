@@ -4,8 +4,9 @@ package org.example.data;
 import com.github.javafaker.Faker;
 import org.example.dto.authuser.AuthRequestDTO;
 import org.example.helpers.PropertiesLoader;
+import org.testng.annotations.DataProvider;
 
-public class Data {
+public class DataProviders {
     static Faker faker = new Faker();
 
     public static String makeUsername() {
@@ -24,11 +25,13 @@ public class Data {
         return faker.internet().emailAddress();
     }
 
-    public static AuthRequestDTO makeRealUser(){
+
+    @DataProvider(name = "realUser")
+    public static Object[][] makeRealUser(){
         AuthRequestDTO user = new AuthRequestDTO();
         user.setUsername(PropertiesLoader.getUsername());
         user.setPassword(PropertiesLoader.getPassword());
-        return user;
+        return new  Object[][] {{user}};
     }
 
 

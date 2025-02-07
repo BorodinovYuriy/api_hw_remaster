@@ -2,7 +2,8 @@ package org.example.tests;
 
 import io.restassured.response.Response;
 import org.bson.Document;
-import org.example.data.Data;
+import org.example.data.DataProviders;
+import org.example.dto.authuser.AuthRequestDTO;
 import org.example.dto.authuser.AuthResponseDTO;
 import org.example.dto.authuser.UserDTO;
 import org.example.helpers.DocumentConverter;
@@ -31,9 +32,14 @@ public class UserTests {
         }
     }
 
-    @Test(description = "Авторизация на портале", priority = 0)
-    public void canGetUserByLogin() {
-        Response response = PostRequestGetUserApi.get(Data.makeRealUser(), "/api/auth/login");
+    @Test(
+            description = "Авторизация на портале",
+            priority = 0,
+            dataProvider = "realUser",
+            dataProviderClass = DataProviders.class
+    )
+    public void canGetUserByLogin(AuthRequestDTO user) {
+        Response response = PostRequestGetUserApi.get(user, "/api/auth/login");
         Assert.assertEquals(response.statusCode(),200, "Не ожидаемый статус-код!");
 
         Document userDocument = mongo.getUserDocumentById(
