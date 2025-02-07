@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 import java.util.Objects;
 
-
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UserDTO {
 
@@ -105,12 +104,16 @@ public class UserDTO {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         UserDTO userDTO = (UserDTO) o;
-        return Objects.equals(id, userDTO.id) && Objects.equals(surname, userDTO.surname) && Objects.equals(firstName, userDTO.firstName) && Objects.equals(username, userDTO.username) && Objects.equals(roles, userDTO.roles) && Objects.equals(name, userDTO.name) && Objects.equals(email, userDTO.email) && Objects.equals(password, userDTO.password);
+        return Objects.equals(id, userDTO.id)
+                && Objects.equals(surname, userDTO.surname)
+                && Objects.equals(firstName, userDTO.firstName)
+                && Objects.equals(username, userDTO.username)
+                && Objects.equals(email, userDTO.email);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, surname, firstName, username, roles, name, email, password);
+        return Objects.hash(id, surname, firstName, username, email);
     }
 
     @Override

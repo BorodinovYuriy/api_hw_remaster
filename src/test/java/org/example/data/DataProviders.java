@@ -2,6 +2,7 @@ package org.example.data;
 
 
 import com.github.javafaker.Faker;
+import org.example.dto.addFakeUser.AddFakeUserDTO;
 import org.example.dto.authuser.AuthRequestDTO;
 import org.example.helpers.PropertiesLoader;
 import org.testng.annotations.DataProvider;
@@ -34,10 +35,14 @@ public class DataProviders {
         return new  Object[][] {{user}};
     }
 
-
-
-
-
-
-
+    @DataProvider(name = "fakeUserAdd")
+    public Object[][] fakeUserAdd() {
+        AddFakeUserDTO user = new AddFakeUserDTO();
+        user.setFirst_name(makeName());
+        user.setSurname(makeSurname());
+        user.setUsername(makeUsername());
+        user.setEmail(makeEmail());
+        user.setPlain_password(makePassword());
+        return new Object[][]{{user}};
+    }
 }
