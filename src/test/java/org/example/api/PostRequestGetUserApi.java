@@ -1,14 +1,12 @@
-package org.example.tests.api;
+package org.example.api;
 
 import io.restassured.response.Response;
-import org.example.dto.AuthUser.AuthRequestDTO;
-import org.example.tests.specification.ApiRequestSpecification;
-
-import java.util.Map;
+import org.example.dto.authuser.AuthRequestDTO;
+import org.example.specification.ApiRequestSpecification;
 
 import static io.restassured.RestAssured.given;
 
-public class PostRequestGetUser {
+public class PostRequestGetUserApi {
 
     public static Response get(AuthRequestDTO user, String path) {
         return given()

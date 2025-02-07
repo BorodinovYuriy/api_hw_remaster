@@ -2,11 +2,8 @@ package org.example.data;
 
 
 import com.github.javafaker.Faker;
-import org.example.dto.AuthUser.AuthRequestDTO;
+import org.example.dto.authuser.AuthRequestDTO;
 import org.example.helpers.PropertiesLoader;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class Data {
     static Faker faker = new Faker();
@@ -27,14 +24,7 @@ public class Data {
         return faker.internet().emailAddress();
     }
 
-    public static Map<String,String> makeRegisteredUser(){
-        Map<String,String> user = new HashMap<>();
-        user.put("username", PropertiesLoader.getUsername());
-        user.put("password", PropertiesLoader.getPassword());
-        return user;
-    }
-
-    public static AuthRequestDTO makeAuthRequestDTO(){
+    public static AuthRequestDTO makeRealUser(){
         AuthRequestDTO user = new AuthRequestDTO();
         user.setUsername(PropertiesLoader.getUsername());
         user.setPassword(PropertiesLoader.getPassword());

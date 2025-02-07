@@ -3,12 +3,12 @@ package org.example.tests;
 import io.restassured.response.Response;
 import org.bson.Document;
 import org.example.data.Data;
-import org.example.dto.AuthUser.AuthResponseDTO;
-import org.example.dto.AuthUser.UserDTO;
+import org.example.dto.authuser.AuthResponseDTO;
+import org.example.dto.authuser.UserDTO;
 import org.example.helpers.DocumentConverter;
 import org.example.helpers.MongoDBHelper;
 import org.example.helpers.PropertiesLoader;
-import org.example.tests.api.PostRequestGetUser;
+import org.example.api.PostRequestGetUserApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
@@ -33,7 +33,7 @@ public class UserTests {
 
     @Test(description = "Авторизация на портале", priority = 0)
     public void canGetUserByLogin() {
-        Response response = PostRequestGetUser.get(Data.makeAuthRequestDTO(), "/api/auth/login");
+        Response response = PostRequestGetUserApi.get(Data.makeRealUser(), "/api/auth/login");
         Assert.assertEquals(response.statusCode(),200, "Не ожидаемый статус-код!");
 
         Document userDocument = mongo.getUserDocumentById(
@@ -50,11 +50,6 @@ public class UserTests {
 
         token = response.jsonPath().getString("token");
         logger.info("token получен: {}", token);
-    }
-    @Test(description = "Добавление нового пользавателя",dependsOnMethods = "canGetUserByLogin")
-    void canAddUser(){
-        System.out.println("Выполнение теста 2");
-
     }
 
 
