@@ -30,5 +30,10 @@ public class UserDTO {
 
     @JsonProperty("email")
     private String email;
+
+    @JsonProperty("password")
+    private String password;
+
+
 }
 
