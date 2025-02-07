@@ -2,6 +2,7 @@ package org.example.data;
 
 
 import com.github.javafaker.Faker;
+import org.example.dto.AuthUser.AuthRequestDTO;
 import org.example.helpers.PropertiesLoader;
 
 import java.util.HashMap;
@@ -33,7 +34,12 @@ public class Data {
         return user;
     }
 
-
+    public static AuthRequestDTO makeAuthRequestDTO(){
+        AuthRequestDTO user = new AuthRequestDTO();
+        user.setUsername(PropertiesLoader.getUsername());
+        user.setPassword(PropertiesLoader.getPassword());
+        return user;
+    }
 
 
 
