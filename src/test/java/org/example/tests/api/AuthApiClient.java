@@ -1,7 +1,6 @@
 package org.example.tests.api;
 
 import io.restassured.response.Response;
-import org.example.dto.UserAuthDTO;
 import org.example.tests.specification.ApiRequestSpecification;
 
 import java.util.Map;
@@ -17,7 +16,6 @@ public class AuthApiClient {
                 .when()
                 .post("/api/auth/login")
                 .then()
-                .statusCode(200)
                 .extract()
                 .response();
     }

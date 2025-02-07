@@ -3,8 +3,9 @@ package org.example.tests;
 import io.restassured.response.Response;
 import org.bson.Document;
 import org.example.data.Data;
-import org.example.dto.UserAuthDTO;
-import org.example.helpers.Converter;
+import org.example.dto.AuthUser.AuthResponseDTO;
+import org.example.dto.AuthUser.UserDTO;
+import org.example.helpers.DocumentConverter;
 import org.example.helpers.MongoDBHelper;
 import org.example.helpers.PropertiesLoader;
 import org.example.tests.api.AuthApiClient;
@@ -32,60 +33,19 @@ public class UserTests {
     public void canGetUserByLogin() {
 
         Response response = AuthApiClient.login(Data.makeRegisteredUser());
+        Assert.assertEquals(response.statusCode(),200, "Код ответа НЕ 200!");
 
         Document userDocument = mongo.getUserDocumentById(
                 PropertiesLoader.getMongoCollectionUsers(),
                 response.jsonPath().getInt("user._id"));
 
         Assert.assertEquals(
-                response.jsonPath().getObject("user", UserAuthDTO.class).toString(),
-                Converter.convertJsonToDto(userDocument.toJson(),UserAuthDTO.class).toString(),
-                "Основные поля в response и ответа от mongo - не совпадают!");
+                response.as(AuthResponseDTO.class).getUser(),
+                DocumentConverter.convertDocumentToDTO(userDocument,UserDTO.class),
+                "Пользователь response user и mongo user не идентичны!"
+        );
 
         token = response.jsonPath().getString("token");
     }
-    @Test(description = "Добавление нового пользавателя",dependsOnMethods = "canGetUserByLogin")
-    void canAddUser(){
-        System.out.println("Выполнение теста 2");
 
-    }
-    @Test(description = "Добавление вопроса",dependsOnMethods = "canGetUserByLogin")
-    public void canAddQuestion() {
-        System.out.println("Выполнение теста 3");
-    }
-
-    @Test(description = "Редактирование вопроса",dependsOnMethods = "canGetUserByLogin")
-    public void canEditQuestion() {
-        System.out.println("Выполнение теста 4");
-    }
-
-    @Test(description = "Добавление квиза",dependsOnMethods = "canGetUserByLogin")
-    public void canAddQuiz() {
-        System.out.println("Выполнение теста 5");
-    }
-
-    @Test(description = "Добавление модуля",dependsOnMethods = "canGetUserByLogin")
-    public void canAddModule() {
-        System.out.println("Выполнение теста 6");
-    }
-
-    @Test(description = "Добавление курса",dependsOnMethods = "canGetUserByLogin")
-    public void canAddCurse() {
-        System.out.println("Выполнение теста 7");
-    }
-
-    @Test(description = "Добавление экзамена",dependsOnMethods = "canGetUserByLogin")
-    public void canAddExam() {
-        System.out.println("Выполнение теста 8");
-    }
-
-    @Test(description = "Добавление темплейта",dependsOnMethods = "canGetUserByLogin")
-    public void canAddTemplate() {
-        System.out.println("Выполнение теста 9");
-    }
-
-    @Test(description = "Авторизация с неверным логином или паролем",dependsOnMethods = "canGetUserByLogin")
-    public void wrongCredential() {
-        System.out.println("Выполнение теста 10");
-    }
 }
