@@ -2,10 +2,13 @@ package org.example.data;
 
 
 import com.github.javafaker.Faker;
-import org.example.dto.addFakeUser.AddFakeUserDTO;
+import org.example.dto.addfakeuser.AddFakeUserDTO;
 import org.example.dto.authuser.AuthRequestDTO;
+import org.example.dto.questionadd.QuestionDTO;
 import org.example.helpers.PropertiesLoader;
 import org.testng.annotations.DataProvider;
+
+import java.util.Map;
 
 public class DataProviders {
     static Faker faker = new Faker();
@@ -25,10 +28,12 @@ public class DataProviders {
     public static String makeEmail() {
         return faker.internet().emailAddress();
     }
-
+    public static String makeQuestion() {
+        return faker.lorem().sentence(5);
+    }
 
     @DataProvider(name = "realUser")
-    public static Object[][] makeRealUser(){
+    public static Object[][] realUser(){
         AuthRequestDTO user = new AuthRequestDTO();
         user.setUsername(PropertiesLoader.getUsername());
         user.setPassword(PropertiesLoader.getPassword());
@@ -36,7 +41,7 @@ public class DataProviders {
     }
 
     @DataProvider(name = "fakeUserAdd")
-    public Object[][] fakeUserAdd() {
+    public static Object[][] fakeUserAdd() {
         AddFakeUserDTO user = new AddFakeUserDTO();
         user.setFirst_name(makeName());
         user.setSurname(makeSurname());
@@ -44,5 +49,12 @@ public class DataProviders {
         user.setEmail(makeEmail());
         user.setPlain_password(makePassword());
         return new Object[][]{{user}};
+    }
+
+    @DataProvider(name = "questionAdd")
+    public static Object[][] questionAdd() {
+        QuestionDTO question = new QuestionDTO();
+        question.setName(makeQuestion());
+        return new Object[][]{{question}};
     }
 }

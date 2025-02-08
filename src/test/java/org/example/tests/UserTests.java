@@ -1,14 +1,16 @@
 package org.example.tests;
 
+import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.bson.Document;
 import org.example.api.PostRequestUserApi;
 import org.example.data.DataProviders;
-import org.example.dto.addFakeUser.AddFakeUserDTO;
-import org.example.dto.addFakeUser.AddFakeUserDataDTO;
+import org.example.dto.addfakeuser.AddFakeUserDTO;
+import org.example.dto.addfakeuser.AddFakeUserDataDTO;
 import org.example.dto.authuser.AuthRequestDTO;
 import org.example.dto.authuser.AuthResponseDTO;
 import org.example.dto.authuser.UserDTO;
+import org.example.dto.questionadd.QuestionDTO;
 import org.example.helpers.DocumentConverter;
 import org.example.helpers.MongoDBHelper;
 import org.example.helpers.PropertiesLoader;
@@ -43,22 +45,24 @@ public class UserTests {
     public void canGetUserByLogin(AuthRequestDTO user) {
         Response response = PostRequestUserApi.post(user, "/api/auth/login");
         Assert.assertEquals(response.statusCode(),200, "Не ожидаемый статус-код!");
+        Assert.assertTrue(response.getContentType().contains(ContentType.JSON.toString()),
+                "Content-Type должен содержать application/json");
 
-        Document userDocument = mongo.getUserDocumentById(
+        Document userDocument = mongo.getDocInMongo(
                 PropertiesLoader.getMongoCollectionUsers(),
-                response.jsonPath().getInt("user._id"));
+                response.jsonPath().getInt("user._id"),
+                "_id");
 
         UserDTO respUser = response.as(AuthResponseDTO.class).getUser();
         UserDTO mongoUser = DocumentConverter.convertDocumentToDTO(userDocument,UserDTO.class);
+
         Assert.assertNotNull(mongoUser,"mongoUser is null!");
-        logger.info("{} respUser:  {}", "canGetUserByLogin - ",respUser);
-        logger.info("{} mongoUser: {}", "canGetUserByLogin - ",mongoUser);
-
         Assert.assertEquals(respUser, mongoUser, "Пользователь response user и mongo user не идентичны!");
-
         token = response.jsonPath().getString("token");
         logger.info("token получен: {}", token);
+        logger.info("auth test - пройден");
     }
+
     @Test(
             description = "Добавление нового пользавателя",
             dependsOnMethods = "canGetUserByLogin",
@@ -68,19 +72,46 @@ public class UserTests {
     void canAddUser(AddFakeUserDTO user){
         Response response = PostRequestUserApi.post(user, "/api/user-auth1", token);
         Assert.assertEquals(response.statusCode(),200, "Не ожидаемый статус-код!");
+        Assert.assertTrue(response.getContentType().contains(ContentType.JSON.toString()),
+                "Content-Type должен содержать application/json");
 
-        Document userDocument = mongo.getUserDocumentById(
+        Document userDocument = mongo.getDocInMongo(
                 PropertiesLoader.getMongoCollectionUsers(),
-                response.jsonPath().getInt("data._id"));
+                response.jsonPath().getInt("data._id"),
+                "_id");
 
 
         AddFakeUserDTO respUser = response.as(AddFakeUserDataDTO.class).getUser();
         AddFakeUserDTO mongoUser = DocumentConverter.convertDocumentToDTO(userDocument,AddFakeUserDTO.class);
-        Assert.assertNotNull(mongoUser,"mongoUser is null!");
-        logger.info("{} respUser:  {}", "canAddUser - ", respUser);
-        logger.info("{} mongoUser: {}", "canAddUser - ", mongoUser);
 
+        Assert.assertNotNull(mongoUser,"mongoUser is null!");
         Assert.assertEquals(respUser, mongoUser, "Пользователь response user и mongo user не идентичны!");
+        logger.info("add new user - тест пройден.");
+    }
+
+    @Test(
+            description = "Добавление вопроса",
+            dependsOnMethods = "canGetUserByLogin",
+            dataProvider = "questionAdd",
+            dataProviderClass = DataProviders.class
+    )
+    public void canAddQuestion(QuestionDTO question) {
+        Response response = PostRequestUserApi.post(question, "/api/theme-question", token);
+        Assert.assertEquals(response.statusCode(),200, "Не ожидаемый статус-код!");
+        Assert.assertTrue(response.getContentType().contains(ContentType.JSON.toString()),
+                "Content-Type должен содержать application/json");
+
+        Document userDocument = mongo.getDocInMongo(
+                PropertiesLoader.mongoCollectionQuizzes(),
+                response.jsonPath().getInt("data._id"),
+                "question");
+
+        Assert.assertEquals(
+                response.jsonPath().getString("data.name"),
+                userDocument.get("specialName").toString(),
+                "Вопрос из response и вопрос из mongo - Не идентичны!"
+        );
+        logger.info("add question test - пройден.");
     }
 
 
