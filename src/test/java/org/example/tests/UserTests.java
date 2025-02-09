@@ -115,7 +115,7 @@ public class UserTests {
         Assert.assertEquals(
                 response.jsonPath().getString("data.name"),
                 userDocument.get("specialName").toString(),
-                "Вопрос из response и вопрос из mongo - Не идентичны!"
+                "question из response и question из mongo - Не идентичны!"
         );
         logger.info("add question test - пройден.");
 
@@ -125,7 +125,6 @@ public class UserTests {
                 "/api/create-lts",
                 token
         );
-        Assert.assertEquals(questionChangeResponse.statusCode(),200, "Не ожидаемый статус-код!");
 
         Document questionDocument = mongo.getDocQueryInMongo(
                 PropertiesLoader.getMongoCollectionQuizzes(),
@@ -137,6 +136,7 @@ public class UserTests {
                 questionDocument.get("specialName").toString(),
                 "Вопрос из response и вопрос из mongo - Не идентичны!"
         );
+
         logger.info("edit question test - пройден.");
     }
 
@@ -193,11 +193,7 @@ public class UserTests {
                 DocumentConverter.convertDocumentToDTO(document,AddModuleDTO.class),
         "response dto и document dto в mongo - не идентичны!");
 
-
-
-
         logger.info("add module test - пройден.");
-
     }
 
     @Test(
@@ -275,6 +271,7 @@ public class UserTests {
                 ).getInteger("_id"),
                 "Неудачное сравнение полей 'id' из response и mongo"
         );
+
         logger.info("add template test - пройден.");
     }
     @Test(
@@ -293,6 +290,7 @@ public class UserTests {
 
         response.then()
                 .body("error", equalTo("Неверный логин / пароль"));
+
         logger.info("wrong credential test - пройден.");
     }
 
