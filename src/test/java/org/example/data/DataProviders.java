@@ -69,8 +69,9 @@ public class DataProviders {
         QuestionDTO question = new QuestionDTO();
         question.setName(makeQuestion());
         File jsonFile = new File("src/test/resources/jsons/editquestion.json");
+        String checkName = "checkingNameModifier";
         return new Object[][]{
-                {question, jsonFile}
+                {question, jsonFile,checkName}
         };
     }
 }

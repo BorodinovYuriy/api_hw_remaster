@@ -98,7 +98,7 @@ public class UserTests {
             dataProvider = "questionAndJson",
             dataProviderClass = DataProviders.class
     )
-    public void canAddAndEditQuestion(QuestionDTO question, File jsonFile) {
+    public void canAddAndEditQuestion(QuestionDTO question, File jsonFile, String checkName) {
         Response response = PostRequestUserApi.post(question, "/api/theme-question", token);
         Assert.assertEquals(response.statusCode(),200, "Не ожидаемый статус-код!");
         Assert.assertTrue(response.getContentType().contains(ContentType.JSON.toString()),
@@ -117,7 +117,6 @@ public class UserTests {
         logger.info("add question test - пройден.");
 
         String jsonString = JSONHelper.fileToJSON(Paths.get(jsonFile.getPath()));
-        String checkName = "checkingNameModifier";
         String prepareJson = JSONHelper.prepareJsonQuestion(
                 jsonString,
                 response.jsonPath().getInt("data._id"),
@@ -140,6 +139,12 @@ public class UserTests {
         logger.info("edit question test - пройден.");
     }
 
+    @Test(
+            description = "Добавление квиза",
+            dependsOnMethods = "canGetUserByLogin")
+    public void canAddQuiz() {
+        System.out.println("Выполнение теста 5");
+    }
 
 
 
