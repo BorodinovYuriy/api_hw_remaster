@@ -11,7 +11,9 @@ import org.testng.annotations.DataProvider;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -112,5 +114,12 @@ public class DataProviders {
     public static Object[][] addTemplate() {
         File jsonFile = new File("src/test/resources/jsons/addtemplate.json");
         return new Object[][]{{jsonFile}};
+    }
+
+    @DataProvider
+    public static Object[][] wrongCred() {
+        Map<String,String> cred = new HashMap<>();
+        cred.put(makeSurname(),makePassword());
+        return new Object[][]{{cred}};
     }
 }

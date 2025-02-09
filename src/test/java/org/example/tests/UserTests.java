@@ -25,6 +25,9 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.nio.file.Paths;
+import java.util.Map;
+
+import static org.hamcrest.Matchers.equalTo;
 
 public class UserTests {
     private static final Logger logger = LoggerFactory.getLogger(UserTests.class);
@@ -69,6 +72,7 @@ public class UserTests {
 
     @Test(
             description = "Добавление нового пользавателя",
+            priority = 1,
             dependsOnMethods = "canGetUserByLogin",
             dataProvider = "fakeUserAdd",
             dataProviderClass = DataProviders.class
@@ -93,6 +97,7 @@ public class UserTests {
 
     @Test(
             description = "Добавление и редактирование вопроса",
+            priority = 1,
             dependsOnMethods = "canGetUserByLogin",
             dataProvider = "questionAndJson",
             dataProviderClass = DataProviders.class
@@ -137,6 +142,7 @@ public class UserTests {
 
     @Test(
             description = "Добавление квиза",
+            priority = 1,
             dependsOnMethods = "canGetUserByLogin",
             dataProvider = "addQuiz",
             dataProviderClass = DataProviders.class
@@ -168,6 +174,7 @@ public class UserTests {
 
     @Test(
             description = "Добавление модуля",
+            priority = 1,
             dependsOnMethods = "canGetUserByLogin",
             dataProvider = "addModule",
             dataProviderClass = DataProviders.class
@@ -195,6 +202,7 @@ public class UserTests {
 
     @Test(
             description = "Добавление курса",
+            priority = 1,
             dependsOnMethods = "canGetUserByLogin",
             dataProvider = "addCourse",
             dataProviderClass = DataProviders.class
@@ -221,6 +229,7 @@ public class UserTests {
     }
     @Test(
             description = "Добавление экзамена",
+            priority = 1,
             dependsOnMethods = "canGetUserByLogin",
             dataProvider = "addExam",
             dataProviderClass = DataProviders.class
@@ -246,6 +255,7 @@ public class UserTests {
     }
     @Test(
             description = "Добавление темплейта",
+            priority = 1,
             dependsOnMethods = "canGetUserByLogin",
             dataProvider = "addTemplate",
             dataProviderClass = DataProviders.class
@@ -266,9 +276,24 @@ public class UserTests {
                 "Неудачное сравнение полей 'id' из response и mongo"
         );
         logger.info("add template test - пройден.");
+    }
+    @Test(
+            description = "Авторизация с неверным логином или паролем",
+            priority = 10,
+            dependsOnMethods = "canGetUserByLogin",
+            dataProvider = "wrongCred",
+            dataProviderClass = DataProviders.class
+    )
+    public void wrongCredential(Map<String,String> wrongCred) {
+        Response response = PostRequestUserApi.postAndStatus(
+                wrongCred,
+                "/api/auth/login",
+                400
+        );
 
-
-
+        response.then()
+                .body("error", equalTo("Неверный логин / пароль"));
+        logger.info("wrong credential test - пройден.");
     }
 
 

@@ -31,4 +31,15 @@ public class PostRequestUserApi {
                 .extract()
                 .response();
     }
+    public static <T> Response postAndStatus(T data, String path, int statusCode) {
+        return given()
+                .spec(ApiRequestSpecification.getSpecification())
+                .body(data)
+                .when()
+                .post(path)
+                .then()
+                .statusCode(statusCode)
+                .extract()
+                .response();
+    }
 }
