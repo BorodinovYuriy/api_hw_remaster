@@ -59,4 +59,8 @@ public class PropertiesLoader {
     public static String getMongoCollectionExams() {
         return properties.getProperty("mongoCollectionExams");
     }
+
+    public static String getMongoCollectionTemplates() {
+        return properties.getProperty("mongoCollectionTemplates");
+    }
 }

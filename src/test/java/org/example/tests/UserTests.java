@@ -243,6 +243,31 @@ public class UserTests {
                 "Неудачное сравнение полей 'id' из response и mongo"
         );
         logger.info("add exam test - пройден.");
+    }
+    @Test(
+            description = "Добавление темплейта",
+            dependsOnMethods = "canGetUserByLogin",
+            dataProvider = "addTemplate",
+            dataProviderClass = DataProviders.class
+    )
+    public void canAddTemplate(File jsonFile) {
+        Response response = PostRequestUserApi.post(
+                JSONHelper.fileToJSON(Paths.get(jsonFile.getPath())),
+                "/api/user-hr-template",
+                token);
+
+        Assert.assertEquals(
+                response.jsonPath().getInt("data._id"),
+                mongo.getDocQueryInMongo(
+                        PropertiesLoader.getMongoCollectionTemplates(),
+                        response.jsonPath().getInt("data._id"),
+                        "_id"
+                ).getInteger("_id"),
+                "Неудачное сравнение полей 'id' из response и mongo"
+        );
+        logger.info("add template test - пройден.");
+
+
 
     }
 

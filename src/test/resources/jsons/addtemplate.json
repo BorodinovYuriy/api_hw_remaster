@@ -1,0 +1,14 @@
+{
+  "name": "Test",
+  "desc": "test",
+  "exams": [
+    {
+      "sourceId": "1005"
+    }
+  ],
+  "courses": [
+    {
+      "sourceId": "1003"
+    }
+  ]
+}

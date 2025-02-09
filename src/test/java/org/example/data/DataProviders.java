@@ -107,4 +107,10 @@ public class DataProviders {
         File jsonFile = new File("src/test/resources/jsons/addexam.json");
         return new Object[][]{{jsonFile}};
     }
+
+    @DataProvider
+    public static Object[][] addTemplate() {
+        File jsonFile = new File("src/test/resources/jsons/addtemplate.json");
+        return new Object[][]{{jsonFile}};
+    }
 }
