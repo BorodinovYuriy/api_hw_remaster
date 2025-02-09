@@ -1,0 +1,20 @@
+{
+  "answerType": "quiz",
+  "isValid": true,
+  "name": "test",
+  "files": [],
+  "variations": [
+    {
+      "name": "",
+      "isCorrect": true
+    },
+    {
+      "name": ""
+    },
+    {
+      "name": ""
+    }
+  ]
+}
+
+

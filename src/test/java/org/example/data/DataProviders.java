@@ -74,4 +74,10 @@ public class DataProviders {
                 {question, jsonFile,checkName}
         };
     }
+
+    @DataProvider
+    public static Object[][] addQuiz() {
+        File jsonFile = new File("src/test/resources/jsons/addquiz.json");
+        return new Object[][]{{jsonFile}};
+    }
 }

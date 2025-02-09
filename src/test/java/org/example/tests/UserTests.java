@@ -1,6 +1,7 @@
 package org.example.tests;
 
 import io.restassured.http.ContentType;
+import io.restassured.http.Headers;
 import io.restassured.response.Response;
 import org.bson.Document;
 import org.example.api.PostRequestUserApi;
@@ -117,13 +118,11 @@ public class UserTests {
         logger.info("add question test - пройден.");
 
         String jsonString = JSONHelper.fileToJSON(Paths.get(jsonFile.getPath()));
-        String prepareJson = JSONHelper.prepareJsonQuestion(
-                jsonString,
-                response.jsonPath().getInt("data._id"),
-                checkName
+        Response questionChangeResponse = PostRequestUserApi.post(
+                JSONHelper.prepareJsonQuestion(jsonString, response.jsonPath().getInt("data._id"), checkName),
+                "/api/create-lts",
+                token
         );
-
-        Response questionChangeResponse = PostRequestUserApi.post(prepareJson, "/api/create-lts", token);
         Assert.assertEquals(questionChangeResponse.statusCode(),200, "Не ожидаемый статус-код!");
 
         Document questionDocument = mongo.getDocInMongo(
@@ -141,10 +140,29 @@ public class UserTests {
 
     @Test(
             description = "Добавление квиза",
-            dependsOnMethods = "canGetUserByLogin")
-    public void canAddQuiz() {
-        System.out.println("Выполнение теста 5");
+            dependsOnMethods = "canGetUserByLogin",
+            dataProvider = "addQuiz",
+            dataProviderClass = DataProviders.class
+    )
+    public void canAddQuiz(File jsonFile) {
+        Response response = PostRequestUserApi.post(
+                JSONHelper.fileToJSON(Paths.get(jsonFile.getPath())),
+                "/api/quiz",
+                token
+        );
+
+        Assert.assertEquals(response.statusCode(),200, "Не ожидаемый статус-код!");
+        Assert.assertTrue(response.getContentType().contains(ContentType.JSON.toString()));
+        Assert.assertNotNull(response.getHeader("Date"), "Заголовок Date отсутствует!");
+        Assert.assertNotNull(response.getHeader("Connection"), "Заголовок Connection отсутствует!");
+        Assert.assertNotNull(response.getHeader("Vary"), "Заголовок Vary отсутствует!");
+        Assert.assertNotNull(response.getHeader("ETag"), "Заголовок ETag отсутствует!");
+
+        logger.info("add quiz test - пройден.");
     }
+
+
+
 
 
 
