@@ -17,11 +17,12 @@ public class MongoDBHelper {
     public MongoCollection<Document> getCollection(String collectionName) {
         return database.getCollection(collectionName);
     }
-    public Document getDocInMongo(String collectionName, int id, String field){
+    public Document getDocQueryInMongo(String collectionName, int id, String field){
         MongoCollection<Document> userCollection = getCollection(collectionName);
         Document query = new Document(field, id);
         return userCollection.find(query).first();
     }
+
 
     public void close() {
         mongoClient.close();

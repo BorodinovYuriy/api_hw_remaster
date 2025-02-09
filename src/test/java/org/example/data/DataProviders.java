@@ -3,12 +3,17 @@ package org.example.data;
 
 import com.github.javafaker.Faker;
 import org.example.dto.addfakeuser.AddFakeUserDTO;
+import org.example.dto.addmodule.AddModuleDTO;
 import org.example.dto.authuser.AuthRequestDTO;
 import org.example.dto.questionadd.QuestionDTO;
 import org.example.helpers.PropertiesLoader;
 import org.testng.annotations.DataProvider;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class DataProviders {
     static Faker faker = new Faker();
@@ -79,5 +84,15 @@ public class DataProviders {
     public static Object[][] addQuiz() {
         File jsonFile = new File("src/test/resources/jsons/addquiz.json");
         return new Object[][]{{jsonFile}};
+    }
+
+    @DataProvider
+    public static Object[][] addModule() {
+        AddModuleDTO module = new AddModuleDTO();
+        module.setName("test");
+        module.setQuestions(
+                Stream.of("1000", "1001", "1002", "1005")
+                .collect(Collectors.toList()));
+        return new Object[][]{{module}};
     }
 }

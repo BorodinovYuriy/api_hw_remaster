@@ -46,6 +46,9 @@ public class PropertiesLoader {
     public static String getMongoCollectionUsers() {
         return properties.getProperty("mongoCollectionUsers");
     }
+    public static String getMongoCollectionCourses() {
+        return properties.getProperty("mongoCollectionCourses");
+    }
     public static String mongoCollectionQuizzes() {
         return properties.getProperty("mongoCollectionQuizzes");
     }

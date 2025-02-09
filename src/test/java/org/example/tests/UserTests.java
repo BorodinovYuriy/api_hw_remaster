@@ -1,13 +1,13 @@
 package org.example.tests;
 
 import io.restassured.http.ContentType;
-import io.restassured.http.Headers;
 import io.restassured.response.Response;
 import org.bson.Document;
 import org.example.api.PostRequestUserApi;
 import org.example.data.DataProviders;
 import org.example.dto.addfakeuser.AddFakeUserDTO;
 import org.example.dto.addfakeuser.AddFakeUserDataDTO;
+import org.example.dto.addmodule.AddModuleDTO;
 import org.example.dto.authuser.AuthRequestDTO;
 import org.example.dto.authuser.AuthResponseDTO;
 import org.example.dto.authuser.UserDTO;
@@ -53,7 +53,7 @@ public class UserTests {
         Assert.assertTrue(response.getContentType().contains(ContentType.JSON.toString()),
                 "Content-Type должен содержать application/json");
 
-        Document userDocument = mongo.getDocInMongo(
+        Document userDocument = mongo.getDocQueryInMongo(
                 PropertiesLoader.getMongoCollectionUsers(),
                 response.jsonPath().getInt("user._id"),
                 "_id");
@@ -80,7 +80,7 @@ public class UserTests {
         Assert.assertTrue(response.getContentType().contains(ContentType.JSON.toString()),
                 "Content-Type должен содержать application/json");
 
-        Document userDocument = mongo.getDocInMongo(
+        Document userDocument = mongo.getDocQueryInMongo(
                 PropertiesLoader.getMongoCollectionUsers(),
                 response.jsonPath().getInt("data._id"),
                 "_id");
@@ -105,7 +105,7 @@ public class UserTests {
         Assert.assertTrue(response.getContentType().contains(ContentType.JSON.toString()),
                 "Content-Type должен содержать application/json");
 
-        Document userDocument = mongo.getDocInMongo(
+        Document userDocument = mongo.getDocQueryInMongo(
                 PropertiesLoader.mongoCollectionQuizzes(),
                 response.jsonPath().getInt("data._id"),
                 "question");
@@ -125,7 +125,7 @@ public class UserTests {
         );
         Assert.assertEquals(questionChangeResponse.statusCode(),200, "Не ожидаемый статус-код!");
 
-        Document questionDocument = mongo.getDocInMongo(
+        Document questionDocument = mongo.getDocQueryInMongo(
                 PropertiesLoader.mongoCollectionQuizzes(),
                 response.jsonPath().getInt("data._id"),
                 "question");
@@ -151,6 +151,7 @@ public class UserTests {
                 token
         );
 
+        //В ТЗ сказано: -"Проверить заголовки", но почему то дана БД...
         Assert.assertEquals(response.statusCode(),200, "Не ожидаемый статус-код!");
         Assert.assertTrue(response.getContentType().contains(ContentType.JSON.toString()));
         Assert.assertNotNull(response.getHeader("Date"), "Заголовок Date отсутствует!");
@@ -158,10 +159,41 @@ public class UserTests {
         Assert.assertNotNull(response.getHeader("Vary"), "Заголовок Vary отсутствует!");
         Assert.assertNotNull(response.getHeader("ETag"), "Заголовок ETag отсутствует!");
 
+        Document document = mongo.getDocQueryInMongo(
+                PropertiesLoader.mongoCollectionQuizzes(),
+                response.jsonPath().getInt("data._id"),
+                "_id"
+        );
+
+        Assert.assertNotNull(document,"Документ не найден в базе mongo!");
+
         logger.info("add quiz test - пройден.");
     }
 
+    @Test(
+            description = "Добавление модуля",
+            dependsOnMethods = "canGetUserByLogin",
+            dataProvider = "addModule",
+            dataProviderClass = DataProviders.class
+    )
+    public void canAddModule(AddModuleDTO moduleDTO) {
+        Response response = PostRequestUserApi.post(moduleDTO, "/api/course-module", token);
+        Assert.assertEquals(response.statusCode(),200, "Не ожидаемый статус-код!");
 
+        Document document = mongo.getDocQueryInMongo(
+                PropertiesLoader.getMongoCollectionCourses(),
+                response.jsonPath().getInt("data._id"),
+                "_id"
+                );
+
+        Assert.assertEquals(
+                moduleDTO,
+                DocumentConverter.convertDocumentToDTO(document,AddModuleDTO.class),
+        "response dto и document dto в mongo - не идентичны!");
+
+        logger.info("add module test - пройден.");
+
+    }
 
 
 
