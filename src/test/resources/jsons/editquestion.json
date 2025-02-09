@@ -1,0 +1,41 @@
+{
+  "currentLTS": "",
+  "changeKey": "version",
+  "question": "!!!",
+  "LTP": {
+    "data": {
+      "jsDetails": "",
+      "comment": "",
+      "quizes": [],
+      "hints": [],
+      "type": "",
+      "videos": [],
+      "name": "тест-name",
+      "hashTags": [],
+      "title": "",
+      "answer": "тест-answer",
+      "facts": [
+        {
+          "name": "тест-facts-name",
+          "desc": "тест-facts-desc"
+        }
+      ],
+      "useCases": [
+        {
+          "name": "тест-useCases-name",
+          "desc": "тест-useCases-desc"
+        }
+      ],
+      "originalDuplicateId": "",
+      "questionId": "1006"
+    }
+  },
+  "versionDetails": {
+    "patch": 0,
+    "subVersion": 0,
+    "version": 1,
+    "versionStr": "1.0.0"
+  }
+}
+
+

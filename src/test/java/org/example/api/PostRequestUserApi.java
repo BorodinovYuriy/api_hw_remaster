@@ -7,10 +7,10 @@ import static io.restassured.RestAssured.given;
 
 
 public class PostRequestUserApi {
-    public static <T> Response post(T userDTO, String path) {
+    public static <T> Response post(T data, String path) {
         return given()
                 .spec(ApiRequestSpecification.getSpecification())
-                .body(userDTO)
+                .body(data)
                 .when()
                 .post(path)
                 .then()
@@ -18,11 +18,11 @@ public class PostRequestUserApi {
                 .response();
     }
 
-    public static <T> Response post(T userDTO, String path, String token) {
+    public static <T> Response post(T data, String path, String token) {
         return given()
                 .spec(ApiRequestSpecification.getSpecification())
                 .header("Authorization",token)
-                .body(userDTO)
+                .body(data)
                 .when()
                 .post(path)
                 .then()

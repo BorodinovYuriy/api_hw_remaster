@@ -8,6 +8,7 @@ import org.example.dto.questionadd.QuestionDTO;
 import org.example.helpers.PropertiesLoader;
 import org.testng.annotations.DataProvider;
 
+import java.io.File;
 import java.util.Map;
 
 public class DataProviders {
@@ -56,5 +57,21 @@ public class DataProviders {
         QuestionDTO question = new QuestionDTO();
         question.setName(makeQuestion());
         return new Object[][]{{question}};
+    }
+
+    @DataProvider(name = "editData")
+    public static Object[][] editData() {
+        File jsonFile = new File("src/test/resources/jsons/editquestion.json");
+        return new Object[][]{{jsonFile}};
+    }
+
+    @DataProvider
+    public static Object[][] questionAddJsonFile() {
+        QuestionDTO question = new QuestionDTO();
+        question.setName(makeQuestion());
+        File jsonFile = new File("src/test/resources/jsons/editquestion.json");
+        return new Object[][]{
+                {question, jsonFile}
+        };
     }
 }
