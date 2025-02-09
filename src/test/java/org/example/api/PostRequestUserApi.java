@@ -14,6 +14,7 @@ public class PostRequestUserApi {
                 .when()
                 .post(path)
                 .then()
+                .statusCode(200)
                 .extract()
                 .response();
     }
@@ -26,6 +27,7 @@ public class PostRequestUserApi {
                 .when()
                 .post(path)
                 .then()
+                .statusCode(200)
                 .extract()
                 .response();
     }

@@ -49,7 +49,6 @@ public class UserTests {
     )
     public void canGetUserByLogin(AuthRequestDTO user) {
         Response response = PostRequestUserApi.post(user, "/api/auth/login");
-        Assert.assertEquals(response.statusCode(),200, "Не ожидаемый статус-код!");
         Assert.assertTrue(response.getContentType().contains(ContentType.JSON.toString()),
                 "Content-Type должен содержать application/json");
 
@@ -76,7 +75,6 @@ public class UserTests {
     )
     void canAddUser(AddFakeUserDTO user){
         Response response = PostRequestUserApi.post(user, "/api/user-auth1", token);
-        Assert.assertEquals(response.statusCode(),200, "Не ожидаемый статус-код!");
         Assert.assertTrue(response.getContentType().contains(ContentType.JSON.toString()),
                 "Content-Type должен содержать application/json");
 
@@ -101,7 +99,6 @@ public class UserTests {
     )
     public void canAddAndEditQuestion(QuestionDTO question, File jsonFile, String checkName) {
         Response response = PostRequestUserApi.post(question, "/api/theme-question", token);
-        Assert.assertEquals(response.statusCode(),200, "Не ожидаемый статус-код!");
         Assert.assertTrue(response.getContentType().contains(ContentType.JSON.toString()),
                 "Content-Type должен содержать application/json");
 
@@ -152,7 +149,6 @@ public class UserTests {
         );
 
         //В ТЗ сказано: -"Проверить заголовки", но почему то дана БД...
-        Assert.assertEquals(response.statusCode(),200, "Не ожидаемый статус-код!");
         Assert.assertTrue(response.getContentType().contains(ContentType.JSON.toString()));
         Assert.assertNotNull(response.getHeader("Date"), "Заголовок Date отсутствует!");
         Assert.assertNotNull(response.getHeader("Connection"), "Заголовок Connection отсутствует!");
@@ -178,7 +174,6 @@ public class UserTests {
     )
     public void canAddModule(AddModuleDTO moduleDTO) {
         Response response = PostRequestUserApi.post(moduleDTO, "/api/course-module", token);
-        Assert.assertEquals(response.statusCode(),200, "Не ожидаемый статус-код!");
 
         Document document = mongo.getDocQueryInMongo(
                 PropertiesLoader.getMongoCollectionCourseModules(),
@@ -190,6 +185,9 @@ public class UserTests {
                 moduleDTO,
                 DocumentConverter.convertDocumentToDTO(document,AddModuleDTO.class),
         "response dto и document dto в mongo - не идентичны!");
+
+
+
 
         logger.info("add module test - пройден.");
 
@@ -204,12 +202,36 @@ public class UserTests {
     public void canAddCurse(File jsonFile) {
         Response response = PostRequestUserApi.post(
                 JSONHelper.fileToJSON(Paths.get(jsonFile.getPath())),
-                "/api/exam",
+                "/api/course",
                 token);
-        Assert.assertEquals(response.statusCode(),200, "Не ожидаемый статус-код!");
         Assert.assertNotNull(response.jsonPath().getInt("data._id"),
                 "Поле data._id в response не должно быть Null");
 
+        Assert.assertEquals(
+                response.jsonPath().getInt("data._id"),
+                mongo.getDocQueryInMongo(
+                        PropertiesLoader.getMongoCollectionCourses(),
+                        response.jsonPath().getInt("data._id"),
+                        "_id"
+                ).getInteger("_id"),
+                "Неудачное сравнение полей 'id' из response и mongo"
+                );
+
+        logger.info("add course test - пройден.");
+    }
+    @Test(
+            description = "Добавление экзамена",
+            dependsOnMethods = "canGetUserByLogin",
+            dataProvider = "addExam",
+            dataProviderClass = DataProviders.class
+    )
+    public void canAddExam(File jsonFile) {
+        Response response = PostRequestUserApi.post(
+                JSONHelper.fileToJSON(Paths.get(jsonFile.getPath())),
+                "/api/exam",
+                token);
+        Assert.assertNotNull(response.jsonPath().getInt("data._id"),
+                "Поле data._id в response не должно быть Null");
 
         Assert.assertEquals(
                 response.jsonPath().getInt("data._id"),
@@ -218,10 +240,10 @@ public class UserTests {
                         response.jsonPath().getInt("data._id"),
                         "_id"
                 ).getInteger("_id"),
-                "Не удачное сравнение полей 'id' из response и mongo"
-                );
+                "Неудачное сравнение полей 'id' из response и mongo"
+        );
+        logger.info("add exam test - пройден.");
 
-        logger.info("add course test - пройден.");
     }
 
 

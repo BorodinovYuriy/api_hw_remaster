@@ -47,13 +47,16 @@ public class PropertiesLoader {
         return properties.getProperty("mongoCollectionUsers");
     }
     public static String getMongoCollectionCourseModules() {
-        return properties.getProperty("mongoCollectionCourses");
+        return properties.getProperty("mongoCollectionCourseModule");
     }
     public static String getMongoCollectionQuizzes() {
         return properties.getProperty("mongoCollectionQuizzes");
     }
+    public static String getMongoCollectionCourses() {
+        return properties.getProperty("mongoCollectionCourses");
+    }
+
     public static String getMongoCollectionExams() {
         return properties.getProperty("mongoCollectionExams");
     }
-
 }
