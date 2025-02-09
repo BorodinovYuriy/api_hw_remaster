@@ -9,7 +9,6 @@ import org.example.helpers.PropertiesLoader;
 import org.testng.annotations.DataProvider;
 
 import java.io.File;
-import java.util.Map;
 
 public class DataProviders {
     static Faker faker = new Faker();
@@ -66,7 +65,7 @@ public class DataProviders {
     }
 
     @DataProvider
-    public static Object[][] questionAddJsonFile() {
+    public static Object[][] questionAndJson() {
         QuestionDTO question = new QuestionDTO();
         question.setName(makeQuestion());
         File jsonFile = new File("src/test/resources/jsons/editquestion.json");

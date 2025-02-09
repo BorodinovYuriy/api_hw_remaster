@@ -1,10 +1,6 @@
 package org.example.tests;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.restassured.http.ContentType;
-import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import org.bson.Document;
 import org.example.api.PostRequestUserApi;
@@ -16,6 +12,7 @@ import org.example.dto.authuser.AuthResponseDTO;
 import org.example.dto.authuser.UserDTO;
 import org.example.dto.questionadd.QuestionDTO;
 import org.example.helpers.DocumentConverter;
+import org.example.helpers.JSONHelper;
 import org.example.helpers.MongoDBHelper;
 import org.example.helpers.PropertiesLoader;
 import org.slf4j.Logger;
@@ -26,8 +23,6 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class UserTests {
@@ -89,7 +84,6 @@ public class UserTests {
                 response.jsonPath().getInt("data._id"),
                 "_id");
 
-
         AddFakeUserDTO respUser = response.as(AddFakeUserDataDTO.class).getUser();
         AddFakeUserDTO mongoUser = DocumentConverter.convertDocumentToDTO(userDocument,AddFakeUserDTO.class);
 
@@ -101,10 +95,10 @@ public class UserTests {
     @Test(
             description = "Добавление и редактирование вопроса",
             dependsOnMethods = "canGetUserByLogin",
-            dataProvider = "questionAddJsonFile",
+            dataProvider = "questionAndJson",
             dataProviderClass = DataProviders.class
     )
-    public void canAddQuestion(QuestionDTO question,File jsonFile) {
+    public void canAddAndEditQuestion(QuestionDTO question, File jsonFile) {
         Response response = PostRequestUserApi.post(question, "/api/theme-question", token);
         Assert.assertEquals(response.statusCode(),200, "Не ожидаемый статус-код!");
         Assert.assertTrue(response.getContentType().contains(ContentType.JSON.toString()),
@@ -121,56 +115,16 @@ public class UserTests {
                 "Вопрос из response и вопрос из mongo - Не идентичны!"
         );
         logger.info("add question test - пройден.");
-//---------------------------------------------------------------------------------------------
 
-        int id = response.jsonPath().getInt("data._id");
-        System.out.println("resp_1 data._id: "+id);
-        String jsonString = null;
-
-        try {
-            jsonString = new String(Files.readAllBytes(Paths.get(jsonFile.getPath())));
-        } catch (IOException e) {
-            System.err.println("Error reading JSON file: " + e.getMessage());
-        }
-
-        // Меняем значение "question"
-        String modifiedJsonString = null;
+        String jsonString = JSONHelper.fileToJSON(Paths.get(jsonFile.getPath()));
         String checkName = "checkingNameModifier";
+        String prepareJson = JSONHelper.prepareJsonQuestion(
+                jsonString,
+                response.jsonPath().getInt("data._id"),
+                checkName
+        );
 
-
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode rootNode = objectMapper.readTree(jsonString);
-
-            // Изменяем значение поля "question"
-            if (rootNode instanceof ObjectNode) {
-                ((ObjectNode) rootNode).put("question", id);
-            }
-            // Получаем узел "LTP"
-            JsonNode ltpNode = rootNode.get("LTP");
-            if (ltpNode instanceof ObjectNode) {
-                // Получаем узел "data"
-                JsonNode dataNode = ltpNode.get("data");
-                if (dataNode instanceof ObjectNode) {
-
-                    // Изменяем значение поля "name"
-                    ((ObjectNode) dataNode).put("name", checkName);
-                }
-            }
-
-
-            // Преобразуем обратно в JSON-строку
-            modifiedJsonString = objectMapper.writeValueAsString(rootNode);
-            System.out.println("modifiedJsonString:");
-            System.out.println(modifiedJsonString);
-
-
-
-        } catch (IOException e) {
-            System.err.println("Error processing JSON: " + e.getMessage());
-        }
-        //------------------------222
-        Response questionChangeResponse = PostRequestUserApi.post(modifiedJsonString, "/api/create-lts", token);
+        Response questionChangeResponse = PostRequestUserApi.post(prepareJson, "/api/create-lts", token);
         Assert.assertEquals(questionChangeResponse.statusCode(),200, "Не ожидаемый статус-код!");
 
         Document questionDocument = mongo.getDocInMongo(
@@ -183,7 +137,7 @@ public class UserTests {
                 questionDocument.get("specialName").toString(),
                 "Вопрос из response и вопрос из mongo - Не идентичны!"
         );
-
+        logger.info("edit question test - пройден.");
     }
 
 
