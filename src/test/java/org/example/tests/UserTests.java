@@ -106,7 +106,7 @@ public class UserTests {
                 "Content-Type должен содержать application/json");
 
         Document userDocument = mongo.getDocQueryInMongo(
-                PropertiesLoader.mongoCollectionQuizzes(),
+                PropertiesLoader.getMongoCollectionQuizzes(),
                 response.jsonPath().getInt("data._id"),
                 "question");
 
@@ -126,7 +126,7 @@ public class UserTests {
         Assert.assertEquals(questionChangeResponse.statusCode(),200, "Не ожидаемый статус-код!");
 
         Document questionDocument = mongo.getDocQueryInMongo(
-                PropertiesLoader.mongoCollectionQuizzes(),
+                PropertiesLoader.getMongoCollectionQuizzes(),
                 response.jsonPath().getInt("data._id"),
                 "question");
 
@@ -160,7 +160,7 @@ public class UserTests {
         Assert.assertNotNull(response.getHeader("ETag"), "Заголовок ETag отсутствует!");
 
         Document document = mongo.getDocQueryInMongo(
-                PropertiesLoader.mongoCollectionQuizzes(),
+                PropertiesLoader.getMongoCollectionQuizzes(),
                 response.jsonPath().getInt("data._id"),
                 "_id"
         );
@@ -181,7 +181,7 @@ public class UserTests {
         Assert.assertEquals(response.statusCode(),200, "Не ожидаемый статус-код!");
 
         Document document = mongo.getDocQueryInMongo(
-                PropertiesLoader.getMongoCollectionCourses(),
+                PropertiesLoader.getMongoCollectionCourseModules(),
                 response.jsonPath().getInt("data._id"),
                 "_id"
                 );
@@ -193,6 +193,35 @@ public class UserTests {
 
         logger.info("add module test - пройден.");
 
+    }
+
+    @Test(
+            description = "Добавление курса",
+            dependsOnMethods = "canGetUserByLogin",
+            dataProvider = "addCourse",
+            dataProviderClass = DataProviders.class
+    )
+    public void canAddCurse(File jsonFile) {
+        Response response = PostRequestUserApi.post(
+                JSONHelper.fileToJSON(Paths.get(jsonFile.getPath())),
+                "/api/exam",
+                token);
+        Assert.assertEquals(response.statusCode(),200, "Не ожидаемый статус-код!");
+        Assert.assertNotNull(response.jsonPath().getInt("data._id"),
+                "Поле data._id в response не должно быть Null");
+
+
+        Assert.assertEquals(
+                response.jsonPath().getInt("data._id"),
+                mongo.getDocQueryInMongo(
+                        PropertiesLoader.getMongoCollectionExams(),
+                        response.jsonPath().getInt("data._id"),
+                        "_id"
+                ).getInteger("_id"),
+                "Не удачное сравнение полей 'id' из response и mongo"
+                );
+
+        logger.info("add course test - пройден.");
     }
 
 

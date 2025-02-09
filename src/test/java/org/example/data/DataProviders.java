@@ -95,4 +95,10 @@ public class DataProviders {
                 .collect(Collectors.toList()));
         return new Object[][]{{module}};
     }
+
+    @DataProvider
+    public static Object[][] addCourse() {
+        File jsonFile = new File("src/test/resources/jsons/addcourse.json");
+        return new Object[][]{{jsonFile}};
+    }
 }
